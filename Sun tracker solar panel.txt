@@ -1,0 +1,84 @@
+#include <Servo.h>
+Servo servohorizontal;
+int servoh = 0;
+int servohmaxlimit = 170;
+int servohlowlimit = 20;
+
+Servo servovertical; 
+int servov = 0; 
+int servovmaxlimit = 170;
+int servovlowlimit = 20;
+int ldrtopleft = 2; //top left LDR
+int ldrtopright = 1; //top right LDR
+int ldrbotleft = 3; // bottom left LDR
+int ldrbotright = 0; // bottom right LDR
+
+ void setup () 
+ {
+  servohorizontal.attach(11);
+  servohorizontal.write(0);
+  servovertical.attach(12);
+  servovertical.write(30);
+  delay(500);
+ }
+
+void loop()
+{
+  servoh = servohorizontal.read();
+  servov = servovertical.read();
+  int topl = analogRead(ldrtopleft);
+  int topr = analogRead(ldrtopright);
+  int botl = analogRead(ldrbotleft);
+  int botr = analogRead(ldrbotright);
+  int avgtop = (topl + topr) / 2; //top LDRs
+  int avgbot = (botl + botr) / 2; //bottom LDRs
+  int avgleft = (topl + botl) / 2; //left LDRs
+  int avgright = (topr + botr) / 2; //right LDRs
+
+  if (avgtop < avgbot)
+  {
+    servovertical.write(servov -1);
+    if (servov > servovmaxlimit) 
+     { 
+      servov = servovmaxlimit;
+     }
+    delay(10);
+  }
+  else if (avgbot < avgtop)
+  {
+    servovertical.write(servov +1);
+    if (servov < servovlowlimit)
+  {
+    servov = servovlowlimit;
+  }
+    delay(10);
+  }
+  else 
+  {
+    servovertical.write(servov);
+  }
+  
+  if (avgleft > avgright)
+  {
+    servohorizontal.write(servoh +1);
+    if (servoh > servohmaxlimit)
+    {
+    servoh = servohmaxlimit;
+    }
+    delay(10);
+  }
+  else if (avgright > avgleft)
+  {
+    servohorizontal.write(servoh -1);
+    if (servoh < servohlowlimit)
+     {
+     servoh = servohlowlimit;
+     }
+    delay(10);
+  }
+  else 
+  {
+    servohorizontal.write(servoh);
+  }
+  delay(50);
+}
